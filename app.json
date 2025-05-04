@@ -36,7 +36,8 @@
       ],
       "expo-video",
       "expo-secure-store",
-      "expo-audio"
+      "expo-audio",
+      "react-native-video"
     ],
     "experiments": {
       "typedRoutes": true

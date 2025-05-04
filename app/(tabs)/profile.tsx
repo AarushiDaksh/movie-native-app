@@ -86,40 +86,100 @@ const Profile = () => {
 
 const styles = StyleSheet.create({
   scrollContent: { padding: 20, paddingBottom: 200 },
+
   logoContainer: { width: '100%', alignItems: 'center', marginBottom: 20 },
-  logo: { width: width * 0.6, height: 120 },
-  primaryButton: {
-    backgroundColor: '#0072ff',
-    padding: 12,
-    borderRadius: 8,
-    width: '48%',
-    marginHorizontal: 5,
+  logo: { width: width * 0.5, height: 100 },
+
+  profileContainer: {
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    padding: 20,
+    borderRadius: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 5,
   },
-  secondaryButton: {
-    backgroundColor: 'red',
-    padding: 12,
-    borderRadius: 8,
-    width: '48%',
-    marginHorizontal: 5,
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: '#fff',
+    marginBottom: 10,
   },
-  buttonText: { color: 'white', textAlign: 'center', fontWeight: 'bold' },
-  profileContainer: { alignItems: 'center', marginTop: 20 },
-  avatar: { width: 96, height: 96, borderRadius: 48, marginBottom: 10 },
-  name: { fontSize: 20, fontWeight: 'bold', color: 'white' },
-  subtext: { color: '#ccc' },
-  statsRow: { flexDirection: 'row', justifyContent: 'space-around', width: '100%', marginTop: 20 },
-  statBox: { alignItems: 'center' },
-  statValue: { fontWeight: 'bold', color: 'white' },
-  section: { marginTop: 30 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: 'white' },
+  name: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  subtext: {
+    color: '#ccc',
+    fontSize: 14,
+    marginTop: 4,
+  },
+
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 20,
+    paddingVertical: 10,
+  },
+  statBox: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  statValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+
+  section: {
+    marginTop: 30,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 12,
+    padding: 16,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 12,
+    color: '#fff',
+  },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 12,
     borderBottomWidth: 1,
+    borderBottomColor: '#333',
   },
-  rowText: { fontSize: 16, color: 'white' },
-  loadingText: { textAlign: 'center', marginTop: 30, color: '#999' },
+  rowText: {
+    fontSize: 16,
+    color: '#fff',
+  },
+
+  primaryButton: {
+    backgroundColor: '#1e90ff',
+    padding: 14,
+    borderRadius: 10,
+    width: '48%',
+    alignItems: 'center',
+  },
+  secondaryButton: {
+    backgroundColor: '#ff3b30',
+    padding: 14,
+    borderRadius: 10,
+    width: '48%',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 15,
+  },
+
   fixedButtonsWrapper: {
     position: 'absolute',
     bottom: 10,
@@ -129,6 +189,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     zIndex: 10,
     marginBottom: 80,
+  },
+
+  loadingText: {
+    textAlign: 'center',
+    marginTop: 30,
+    color: '#aaa',
+    fontSize: 16,
   },
 });
 

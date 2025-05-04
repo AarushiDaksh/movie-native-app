@@ -8,6 +8,9 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
+
+import { Video ,ResizeMode} from 'expo-av';
+
 import { icons } from "@/constants/icons";
 import { images } from '@/constants/images';
 import useWarmUpBrowser from "@/app/hooks/useWarmBrowser";
@@ -29,19 +32,23 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Image
-        source={images.spiderMan}
-        style={{ flex: 1, width: '100%',height:"100%",  position: 'absolute', zIndex: 0 }}
-        resizeMode="cover"
+       <Video
+        source={require("@/assets/Spider.mp4")} 
+        style={StyleSheet.absoluteFill}
+        resizeMode={ResizeMode.COVER}
+        shouldPlay
+        isLooping
+        isMuted
       />
       <View style={styles.overlay}>      
-        <View style={styles.logoContainer}>
+      <View style={styles.logoWrapper}>
           <Image
             source={icons.logo}
             resizeMode="contain"
-            style={{ width: 400, height: 200 }}
+            style={styles.logo}
           />
         </View>
+
 
         <Text style={styles.tagline}>
           Watch your favourite movie or series on only one platform. You can
@@ -63,6 +70,15 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
+  backgroundVideo: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    zIndex: -1,
+  },
+  
   container: {
     flex: 1,
     backgroundColor: "#000",
@@ -120,4 +136,18 @@ const styles = StyleSheet.create({
     color: "#000",
     marginRight: 30,
   },
+  logoWrapper: {
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    
+    paddingTop: 10,
+  },
+  
+  logo: {
+    width: 400,
+    height: 150,
+    maxWidth: '100%',
+    
+  },
+  
 });
