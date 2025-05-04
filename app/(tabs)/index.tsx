@@ -1,75 +1,111 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  ScrollView,
+  Image,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import useFetch from '@/services/usefetch';
+import { fetchMovies } from '@/services/api';
+import { getTrendingMovies } from '@/services/appwrite';
+import { icons } from '@/constants/icons';
+import { images } from '@/constants/images';
+import SearchBar from '@/components/SearchBar';
+import MovieCard from '@/components/MovieCard';
+import TrendingCard from '@/components/TrendingCard';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const { width } = Dimensions.get('window');
 
-export default function HomeScreen() {
+const Index = () => {
+  const router = useRouter();
+
+  const {
+    data: trendingMovies,
+    loading: trendingLoading,
+    error: trendingError,
+  } = useFetch(getTrendingMovies);
+
+  const {
+    data: movies,
+    loading: moviesLoading,
+    error: moviesError,
+  } = useFetch(() => fetchMovies({ query: '' }));
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View style={styles.container}>
+      <Image source={images.bg2} style={styles.backgroundImage} resizeMode="cover" />
+
+      <ScrollView
+        style={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <View style={styles.logoContainer}>
+          <Image source={icons.logo} resizeMode="contain" style={styles.logo} />
+        </View>
+
+        {(moviesLoading || trendingLoading) ? (
+          <ActivityIndicator color="#0000ff" style={styles.loader} />
+        ) : (moviesError || trendingError) ? (
+          <Text>Error: {moviesError?.message || trendingError?.message}</Text>
+        ) : (
+          <View>
+            <SearchBar
+              onPress={() => router.push('/search')}
+              placeholder="Search for a movie"
+            />
+
+            {Array.isArray(trendingMovies) && trendingMovies.length > 0 && (
+              <View style={styles.sectionContainer}>
+                <Text style={styles.sectionTitle}>Trending Movies</Text>
+                <FlatList
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  data={
+                    [...new Map(trendingMovies.map((item) => [item.movie_id, item])).values()].slice(1, 6)
+                  }
+                  contentContainerStyle={{ gap: 26 }}
+                  renderItem={({ item, index }) => <TrendingCard movie={item} index={index} />}
+                  keyExtractor={(item) => item.movie_id.toString()}
+                  ItemSeparatorComponent={() => <View style={{ width: 16 }} />}
+                />
+              </View>
+            )}
+
+            <Text style={styles.sectionTitle}>Latest Movies</Text>
+            <FlatList
+              data={movies || []}
+              renderItem={({ item }) => <MovieCard {...item} />}
+              keyExtractor={(item) => item.id.toString()}
+              numColumns={3}
+              columnWrapperStyle={styles.movieRow}
+              style={{ paddingBottom: 32 }}
+              scrollEnabled={false}
+            />
+          </View>
+        )}
+      </ScrollView>
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+  container: { flex: 1, backgroundColor: '#0f0f0f' },
+  backgroundImage: { position: 'absolute', width: '100%', height: '100%', zIndex: 0 },
+  scrollContainer: { flex: 1 },
+  scrollContent: { minHeight: '100%', paddingHorizontal: 20, paddingBottom: 10 },
+  logoContainer: { width: '100%', alignItems: 'center', marginTop: 40, marginBottom: 20 },
+  logo: { width: width * 0.6, height: 120 },
+  loader: { marginTop: 40, alignSelf: 'center' },
+  sectionContainer: { marginTop: 20 },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: 'white', marginBottom: 12 },
+  movieRow: { justifyContent: 'flex-start', gap: 20, marginBottom: 10 },
 });
+
+export default Index;

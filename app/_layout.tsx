@@ -1,29 +1,54 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import React, { useEffect, useState } from "react";
+import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
+import { Stack } from "expo-router";
+import { StatusBar } from "react-native";
+import { SavedMoviesProvider } from "@/store/savedMovie";
+import LoginScreen from "@/app/screens/LoginScreen";
+import { tokenCache } from "@/utils/cache";
+import * as SecureStore from "expo-secure-store";
+import "./global.css";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+const clerkPublishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+function ProtectedRoutes() {
+  const { isSignedIn, isLoaded, signOut } = useAuth();
+  const [sessionChecked, setSessionChecked] = useState(false);
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const session = await SecureStore.getItemAsync("__session");
+        if (!session) {
+          await signOut(); 
+        }
+      } catch (error) {
+        console.error("Error checking session:", error);
+      }
+      setSessionChecked(true);
+    };
+
+    checkSession();
+  }, []);
+
+  if (!isLoaded || !sessionChecked) return null;
+
+  if (!isSignedIn) return <LoginScreen />;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="movie/[id]" options={{ headerShown: false }} />
+    </Stack>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <ClerkProvider publishableKey={clerkPublishableKey} tokenCache={tokenCache}>
+      <SavedMoviesProvider>
+        <StatusBar hidden />
+        <ProtectedRoutes />
+      </SavedMoviesProvider>
+    </ClerkProvider>
   );
 }
