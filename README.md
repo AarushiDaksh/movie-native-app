@@ -1,4 +1,4 @@
-## VOQIT-MOVIE-APP
+## VOQIT-MOVIE-APP.
 ## 🔐 Clerk Authentication – Sign In with Google
 
 The **Voqit Movies App** uses [Clerk](https://clerk.dev) for secure user authentication. It allows users to sign in effortlessly with their **Google account**. This integration ensures user data is managed safely while enhancing the login experience.
